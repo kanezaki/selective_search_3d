@@ -1,0 +1,17 @@
+<package>
+  <description brief="selective_search_3d">
+
+     selective_search_3d
+
+  </description>
+  <author>kanezaki</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/selective_search_3d</url>
+  <depend package="roscpp"/>
+  <depend package="pcl_ros"/>
+  <depend package="cv_bridge"/>
+
+</package>
+
+
