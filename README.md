@@ -32,9 +32,9 @@ or
 In this case, five bounding boxes at maximum are shown.  
 
 ### 4. Print bounding boxes. (3D)  
-  `$ rosrun selective_search_3d print_bbox3D -n 5  
+  `$ rosrun selective_search_3d print_bbox3D -n 5`  
 or  
-  `$ python print_bbox3D.py -n 5  
+  `$ python print_bbox3D.py -n 5`  
 In this case, five bounding boxes at maximum are printed.  
 
 ## Licence
