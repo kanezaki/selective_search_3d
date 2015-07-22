@@ -37,43 +37,27 @@ import roslib
 roslib.load_manifest('selective_search_3d')
 import sys
 import rospy
-import cv2
-from std_msgs.msg import UInt16MultiArray
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
+from std_msgs.msg import Float32MultiArray
 
-class show_bbox:
+class print_bbox3D:
 
   def __init__(self):
-    cv2.namedWindow("Image window", 1)
-    self.bridge = CvBridge()
-    self.bbox_sub = rospy.Subscriber("/bbox",UInt16MultiArray,self.callback2,queue_size = 1)
-    self.image_sub = rospy.Subscriber("image_topic",Image,self.callback1)
+    self.bbox_sub = rospy.Subscriber("/bbox3D",Float32MultiArray,self.callback,queue_size = 1)
 
-  def callback1(self,data):
-    global cv_image
-    try:
-      cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-    except CvBridgeError, e:
-      print e
-
-  def callback2(self,bbox):
-    global cv_image, bbox_num_max
-    bbox_num = min( bbox_num_max, len(bbox.data) / 4 );
+  def callback(self,bbox):
+    global bbox_num_max
+    bbox_num = min( bbox_num_max, len(bbox.data) / 6 );
     print "bbox_num:", bbox_num
     for i in range( 0, bbox_num ):
-      cv2.rectangle(cv_image, (bbox.data[ 4 * i ], bbox.data[ 4 * i + 2 ]),(bbox.data[ 4 * i + 1 ], bbox.data[ 4 * i + 3 ]),(0,0,255),2)
-    cv2.imshow("Image window", cv_image)
-    cv2.waitKey(3)
+      print "(%d) x: (%.3f, %.3f), y: (%.3f, %.3f), z: (%.3f, %.3f)" % ( i, bbox.data[ 6 * i ], bbox.data[ 6 * i + 1 ], bbox.data[ 6 * i + 2 ], bbox.data[ 6 * i + 3 ], bbox.data[ 6 * i + 4 ], bbox.data[ 6 * i + 5 ])
 
 def main(args):
-  sb = show_bbox()
-  rospy.init_node('show_bbox', anonymous=True)
+  pb = print_bbox3D()
+  rospy.init_node('print_bbox3D', anonymous=True)
   try:
     rospy.spin()
   except KeyboardInterrupt:
     print "Shutting down"
-  cv2.destroyAllWindows()
 
 if __name__ == '__main__':
   global bbox_num_max

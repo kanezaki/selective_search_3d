@@ -31,3 +31,4 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_executable(selective_search_3d src/selective_search_3d.cpp)
 rosbuild_add_executable(show_bbox src/show_bbox.cpp)
+rosbuild_add_executable(print_bbox3D src/print_bbox3D.cpp)

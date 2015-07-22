@@ -37,6 +37,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <std_msgs/UInt16MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <pcl_ros/point_cloud.h>
 #include <pcl/console/parse.h>
 #include <pcl/segmentation/supervoxel_clustering.h>
@@ -116,8 +117,10 @@ private:
   ros::NodeHandle _nh;
   ros::Subscriber _sub;
   pcl::PointCloud<PointT> input_cloud;
-  std_msgs::UInt16MultiArray msg;
-  ros::Publisher pub;
+  std_msgs::UInt16MultiArray msg1;
+  std_msgs::Float32MultiArray msg2;
+  ros::Publisher pub1;
+  ros::Publisher pub2;
   std::vector< SP > sps;
   float voxel_resolution;
   float seed_resolution;
@@ -143,15 +146,19 @@ public:
     pcl::console::parse (argc, argv, "-d", depth_limit);
     _sub = _nh.subscribe ("/points", 1,  &SelectiveSearch3D::points_cb, this);
     ROS_INFO ("Listening for incoming data on topic /points ..." );
-    pub = _nh.advertise<std_msgs::UInt16MultiArray>("bbox", 1);
+    pub1 = _nh.advertise<std_msgs::UInt16MultiArray>("bbox", 1);
+    pub2 = _nh.advertise<std_msgs::Float32MultiArray>("bbox3D", 1);
   }
 
   ~SelectiveSearch3D() {}
 
   void publish_zero_bbox(){
-    msg.data.resize( 1 );
-    msg.data[ 0 ] = 0;
-    pub.publish(msg);
+    msg1.data.resize( 1 );
+    msg1.data[ 0 ] = 0;
+    pub1.publish(msg1);
+    msg2.data.resize( 1 );
+    msg2.data[ 0 ] = 0;
+    pub2.publish(msg2);
   }
 
   void points_cb( const sensor_msgs::PointCloud2ConstPtr& cloud_ ){
@@ -419,8 +426,8 @@ public:
     }
     
     //* NMS
-    std::vector<uint16_t> bbox;
-    bbox.resize( 0 );
+    std::vector<uint16_t> bbox( 0 );
+    std::vector<float> bbox3D( 0 );
     for( int i = sps.size()-1; i > -1; --i ){
       int j = sps[ i ].label_ID_parent;
       bool skip_flg = false;
@@ -436,14 +443,24 @@ public:
 	bbox.push_back( sps[ i ].max_im_x );
 	bbox.push_back( sps[ i ].min_im_y );
 	bbox.push_back( sps[ i ].max_im_y );
+	bbox3D.push_back( sps[ i ].min_x );
+	bbox3D.push_back( sps[ i ].max_x );
+	bbox3D.push_back( sps[ i ].min_y );
+	bbox3D.push_back( sps[ i ].max_y );
+	bbox3D.push_back( sps[ i ].min_z );
+	bbox3D.push_back( sps[ i ].max_z );
       }
     }
 
     //* publish
-    msg.data.resize( bbox.size() );
+    msg1.data.resize( bbox.size() );
     for( size_t i = 0; i < bbox.size(); ++i )
-      msg.data[ i ] = bbox[ i ];
-    pub.publish(msg);
+      msg1.data[ i ] = bbox[ i ];
+    pub1.publish(msg1);
+    msg2.data.resize( bbox3D.size() );
+    for( size_t i = 0; i < bbox3D.size(); ++i )
+      msg2.data[ i ] = bbox3D[ i ];
+    pub2.publish(msg2);
     std::cout << "Published " << bbox.size() / 4 << " boxes." << std::endl;
     std::cout << "------------------------------------------" << std::endl;
 

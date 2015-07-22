@@ -25,11 +25,17 @@ In this case, you will get point cloud in rostopic */camera/depth_registered/poi
   `$ rosrun selective_search_3d selective_search_3d -v 0.02 -d 1.0 points:=/camera/depth_registered/points`  
 In this case, you will get bounding boxes of object candidates within depth range = 1.0m. The voxel resolution is set to 0.02m.
 
-### 3. Show bounding boxes.
+### 3. Show bounding boxes. (2D)  
   `$ rosrun selective_search_3d show_bbox -n 5 image:=/camera/rgb/image_color`  
 or  
   `$ python show_bbox.py -n 5 image_topic:=/camera/rgb/image_color`  
 In this case, five bounding boxes at maximum are shown.  
+
+### 4. Print bounding boxes. (3D)  
+  `$ rosrun selective_search_3d print_bbox3D -n 5  
+or  
+  `$ python print_bbox3D.py -n 5  
+In this case, five bounding boxes at maximum are printed.  
 
 ## Licence
 

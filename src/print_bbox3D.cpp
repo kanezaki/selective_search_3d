@@ -35,49 +35,36 @@
  */
 
 #include <ros/ros.h>
-#include <cv_bridge/cv_bridge.h>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <std_msgs/UInt16MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <pcl/console/parse.h>
 
-class ShowBbox {
+class PrintBbox {
 private:
   ros::NodeHandle _nh;
-  ros::Subscriber _sub1, _sub2;
-  std_msgs::UInt16MultiArray bbox;
+  ros::Subscriber _sub;
   int bbox_num_max;
 public:
-  ShowBbox( int argc, char** argv ) : bbox_num_max( 10 ) {
+  PrintBbox( int argc, char** argv ) : bbox_num_max( 10 ) {
     pcl::console::parse (argc, argv, "-n", bbox_num_max);
-    _sub1 = _nh.subscribe ("/bbox", 1,  &ShowBbox::bbox_cb, this);
-    _sub2 = _nh.subscribe ("/image", 1,  &ShowBbox::image_cb, this);
-    ROS_INFO ("Listening for incoming data on topic /image ..." );
+    _sub = _nh.subscribe ("/bbox3D", 1,  &PrintBbox::bbox_cb, this);
+    ROS_INFO ("Listening for incoming data on topic /bbox3D ..." );
   }
 
-  ~ShowBbox() {}
+  ~PrintBbox() {}
 
-  void bbox_cb( const std_msgs::UInt16MultiArrayConstPtr& msg ){
-    bbox = *msg;
-  }
-
-  //* show color img
-  void image_cb( const sensor_msgs::ImageConstPtr& msg ){
-    cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
-    cv::Mat img = cv_ptr->image;
-    const int bbox_num = std::min( bbox_num_max, (int)(bbox.data.size() / 4) );
+  void bbox_cb( const std_msgs::Float32MultiArrayConstPtr& msg ){
+    std_msgs::Float32MultiArray bbox = *msg;
+    const int bbox_num = std::min( bbox_num_max, (int)(bbox.data.size() / 6) );
     std::cout << "bbox_num: " << bbox_num << std::endl;
     for( int i = 0; i < bbox_num; ++i )
-      cv::rectangle( img, cv::Point( bbox.data[ 4 * i ], bbox.data[ 4 * i + 2 ] ), cv::Point( bbox.data[ 4 * i + 1 ], bbox.data[ 4 * i + 3 ] ), cv::Scalar(0,0,255), 2, 2 );
-    cv::imshow("img", img);
-    cv::waitKey(3);
+      printf( "(%d) x: (%.3f, %.3f), y: (%.3f, %.3f), z: (%.3f, %.3f)\n", i, bbox.data[ 6 * i ], bbox.data[ 6 * i + 1 ], bbox.data[ 6 * i + 2 ], bbox.data[ 6 * i + 3 ], bbox.data[ 6 * i + 4 ], bbox.data[ 6 * i + 5 ] );
   }
   
 };
 
 int main( int argc, char** argv ){
-  ros::init(argc,argv,"show_bbox");
-  ShowBbox sb(argc,argv);
+  ros::init(argc,argv,"print_bbox3D");
+  PrintBbox pb(argc,argv);
   ros::spin();
 
   return(0);
