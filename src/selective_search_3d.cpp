@@ -288,12 +288,11 @@ public:
     for( size_t i = 0; i < refined_sv_normal_cloud->points.size(); ++i ){
       size_t l = (sv_itr++)->first;
       if( (label_num[ l ] == 0) || (std::isnan(refined_sv_normal_cloud->points[ i ].normal_x)) ){ // invalid superpixel!
-	std::multimap<uint32_t, uint32_t>::iterator itr = label_adjacency.begin ();
-	for( size_t j = 0; j < label_adjacency.size(); ++j )
-	  if( (itr->first == l) || (itr->second == l) )
+	for( std::multimap<uint32_t, uint32_t>::iterator itr = label_adjacency.begin(); itr != label_adjacency.end(); ++itr )
+	  if( (itr->first == l) || (itr->second == l) ){
 	    label_adjacency.erase( itr );
-	  else
-	    itr++;
+	    itr--;
+	  }
 	continue;
       }
       tmp.label = l;
