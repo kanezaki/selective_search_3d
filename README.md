@@ -37,6 +37,10 @@ or
   `$ python print_bbox3D.py -n 5`  
 In this case, five bounding boxes at maximum are printed.  
 
+### 5. Run 3D selective search offline.  
+  `$ rosrun selective_search_3d selective_search_3d_offline -v 0.02 -p cloud.pcd -o bbox.txt`  
+In this case, you will get bounding boxes of object candidates written into bbox.txt. The voxel resolution is set to 0.02m.  
+
 ## Licence
 
 BSD
