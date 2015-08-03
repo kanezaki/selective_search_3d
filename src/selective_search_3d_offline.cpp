@@ -131,7 +131,7 @@ public:
     color_importance ( 0.2f ),
     spatial_importance ( 0.4f ),
     normal_importance ( 1.0f ),
-    depth_limit ( 1.5f )
+    depth_limit ( std::numeric_limits< float >::max() )
   {
     pcl::console::parse (argc, argv, "-v", voxel_resolution);
     pcl::console::parse (argc, argv, "-s", seed_resolution);
