@@ -37,7 +37,14 @@ or
   `$ python print_bbox3D.py -n 5`  
 In this case, five bounding boxes at maximum are printed.  
 
-### 5. Run 3D selective search offline.  
+### 5. Run Fast R-CNN online.  
+Please install Fast R-CNN according to https://github.com/rbgirshick/fast-rcnn
+  
+Then, specify the path of the directory that you cloned Fast R-CNN into *fast_rcnn_path* in do_fast-rcnn.py.  
+  `$ python do_fast-rcnn.py --net caffenet --conf 0.7 image_topic:=/camera/rgb/image_color`  
+Please change the threshold of confidence (0.7) on demand.  
+
+### 6. Run 3D selective search offline.  
   `$ rosrun selective_search_3d selective_search_3d_offline -v 0.02 -p cloud.pcd -o bbox.txt`  
 In this case, you will get bounding boxes of object candidates written into bbox.txt. The voxel resolution is set to 0.02m.  
 
