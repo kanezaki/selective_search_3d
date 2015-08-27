@@ -53,8 +53,6 @@ import scipy.io as sio
 import caffe, os, cv2
 import argparse
 
-import roslib
-roslib.load_manifest('selective_search_3d')
 import rospy
 from std_msgs.msg import UInt16MultiArray
 from sensor_msgs.msg import Image
